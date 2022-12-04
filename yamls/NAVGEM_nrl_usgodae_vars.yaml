@@ -1,0 +1,252 @@
+# source is nrl.
+url:
+  f"https://www.usgodae.org/ftp/outgoing/fnmoc/models/navgem_0.5/{start_time:%Y}/{start_time:%Y%m%d%H}"
+# a list of dataset keys, the keys correspond to the parameter name file endings given by NRL but also 
+# used when grib files are concatenated along a variable name.  
+# filter_by_keys parameter is retained to specify what is being read at all times.
+# keys: typeOfLevel, shortName or some other searchable parameter, like paramId or stepType, etc.
+datasets:
+   air_temp:
+     filters:
+       typeOfLevel: isobaricInhPa
+       shortName: t
+   air_temp2m:
+     file_ending: air_temp
+     filters:
+       typeOfLevel: heightAboveGround
+       shortName: 2t
+   air_temp_sfc:
+     file_ending: air_temp
+     filters:
+       typeOfLevel: isobaricInhPa
+       shortName: t
+       level: 1013
+   air_temp_trop:
+     file_ending: air_temp
+     filters:
+       typeOfLevel: tropopause
+   cape:
+     filters:
+       typeOfLevel: surface
+       stepType: instant
+   geop_ht:
+     filters:
+       typeOfLevel: isobaricInhPa
+       shortName: gh
+   ice_cvrg:
+     filters:
+       typeOfLevel: surface
+       stepType: instant
+   ucmp10m:
+     file_ending: wnd_ucmp
+     filters:
+       typeOfLevel: heightAboveGround
+       shortName: 10u
+   vcmp10m:
+     file_ending: wnd_vcmp
+     filters:
+       typeOfLevel: heightAboveGround
+       shortName: 10v
+   prcp_h20:
+     filters:
+       stepType: instant
+       typeOfLevel: surface
+       shortName: pwat
+   pres:
+     filters:
+       stepType: instant
+       typeOfLevel: surface
+       shortName: sp
+   pres_trop:
+     file_ending: pres
+     filters:
+       typeOfLevel: tropopause
+   pres_msl:
+     file_ending: pres_msl
+     filters:
+       stepType: instant
+       typeOfLevel: meanSea
+       shortName: msl
+   rltv_hum:
+     filters:
+       typeOfLevel: isobaricInhPa
+       shortName: r
+   rltv_hum_2m:
+     file_ending: rltv_hum
+     filters:
+       typeOfLevel: heightAboveGround
+       shortName: r
+   terr_ht:
+     filters:
+       typeOfLevel: surface
+   wnd_ucmp:
+     filters:
+       typeOfLevel: isobaricInhPa
+   wnd_vcmp:
+     filters:
+       typeOfLevel: isobaricInhPa
+   gfs_grib:
+      # format keys, then the directory where the data from that format is stored, followed by file_pattern
+      directory: f"/apollo/cloud/Ancil_Data/clavrx_ancil_data/dynamic/gfs_grib"
+      # directory: f"/Users/joleenf/data/clavrx/ozone/gfs/{start_time:%Y}"
+      file_pattern: f"gfs.{start_time:%Y%m%d}.t{model_init_hour}z.pgrb2f12"
+      o3mr:
+         typeOfLevel: isobaricInhPa
+         shortName: o3mr
+      sdwe:
+         typeOfLevel: surface
+         shortName: sdwe
+
+# dataset key for data_array should match the appropriate 'datasets' key matching
+# the filter_by_key={'type_of_level': something, 'shortName': something}
+# data arrays needed for CLAVRx input variables defined in 'data_arrays' here.
+# long_name is not required, unless a change is needed from the input data (for example, total_ozone
+# has a long_name of 'unknown' and that is not super helpful information.
+data_arrays:
+  cape:
+    dataset: cape
+    cfVarName: unknown 
+    ndims_out: 2
+    out_units: W/m2
+    units_fn: !!python/name:conversions.no_conversion
+  height:
+    dataset: geop_ht
+    cfVarName: gh
+    ndims_out: 3
+    out_units: km
+    units_fn: !!python/name:conversions.meter_to_km
+  ice fraction:
+    dataset: ice_cvrg
+    cfVarName: p3091
+    ndims_out: 2
+    out_units: "1"
+    units_fn: !!python/name:conversions.no_conversion
+  lat:
+    dataset: air_temp
+    cfVarName: latitude
+    ndims_out: 1
+    out_units: Null
+    units_fn: !!python/name:conversions.no_conversion
+  level:
+    dataset: air_temp
+    cfVarName: isobaricInhPa
+    ndims_out: 1
+    out_units: hPa
+    units_fn: !!python/name:conversions.no_conversion
+  lon:
+    dataset: air_temp
+    cfVarName: longitude
+    ndims_out: 1
+    out_units: Null
+    long_name: longitude
+    units_fn: !!python/name:conversions.no_conversion
+  MSL pressure:
+    dataset: pres_msl
+    cfVarName: msl
+    ndims_out: 2
+    out_units: hPa
+    units_fn: !!python/name:conversions.pa_to_hPa
+  o3mr:
+    dataset: gfs_grib
+    cfVarName: o3mr
+    ndims_out: 3
+    out_units: kg/kg
+    nan_fill: False
+    long_name: ozone_mixing_ratio
+    units_fn: !!python/name:conversions.no_conversion
+  pressure levels:
+    dataset: air_temp
+    cfVarName: isobaricInhPa
+    ndims_out: 1
+    out_units: hPa
+    units_fn: !!python/name:conversions.no_conversion
+  rh:
+    dataset: rltv_hum
+    cfVarName: r
+    ndims_out: 3
+    out_units: "%"
+    units_fn: !!python/name:conversions.no_conversion
+  rh at sigma=0.995:
+    dataset: rltv_hum_2m
+    cfVarName: r
+    ndims_out: 2
+    out_units: "%"
+    units_fn: !!python/name:conversions.no_conversion
+  surface height:
+    dataset: terr_ht
+    cfVarName: unknown
+    ndims_out: 2
+    out_units: km
+    units_fn: !!python/name:conversions.meter_to_km
+  surface pressure:
+    dataset: pres
+    cfVarName: sp
+    ndims_out: 2
+    out_units: hPa
+    units_fn: !!python/name:conversions.pa_to_hPa
+  surface temperature:
+    dataset: air_temp_sfc
+    cfVarName: t
+    ndims_out: 2
+    out_units: K
+    units_fn: !!python/name:conversions.no_conversion
+  temperature:
+    dataset: air_temp
+    cfVarName: t
+    ndims_out: 3
+    out_units: K
+    units_fn: !!python/name:conversions.no_conversion
+  temperature at sigma=0.995:
+    dataset: air_temp2m
+    cfVarName: t2m
+    ndims_out: 2
+    out_units: K
+    units_fn: !!python/name:conversions.no_conversion
+  total precipitable water:
+    dataset: prcp_h20
+    cfVarName: p3054
+    ndims_out: 2
+    out_units: cm
+    units_fn: !!python/name:conversions.km_per_square_meter_to_cm
+  tropopause temperature:
+    dataset: air_temp_trop
+    cfVarName: t
+    ndims_out: 2
+    out_units: K
+    units_fn: !!python/name:conversions.no_conversion
+  tropopause pressure:
+    dataset: pres_trop
+    cfVarName: pres
+    ndims_out: 2
+    out_units: hPa
+    units_fn: !!python/name:conversions.pa_to_hPa
+  u-wind:
+    dataset: wnd_ucmp
+    cfVarName: u
+    ndims_out: 3
+    out_units: m/s
+    units_fn: !!python/name:conversions.no_conversion
+  u-wind at sigma=0.995:
+    dataset: ucmp10m
+    cfVarName: u10
+    ndims_out: 2
+    out_units: m/s
+    units_fn: !!python/name:conversions.no_conversion
+  v-wind:
+    dataset: wnd_vcmp
+    cfVarName: v
+    ndims_out: 3
+    out_units: m/s
+    units_fn: !!python/name:conversions.no_conversion
+  v-wind at sigma=0.995:
+    dataset: vcmp10m
+    cfVarName: v10
+    ndims_out: 2
+    out_units: m/s
+    units_fn: !!python/name:conversions.no_conversion
+  water equivalent snow depth:
+    dataset: gfs_grib
+    cfVarName: sdwe
+    ndims_out: 2
+    out_units: m of water equivalent
+    units_fn: !!python/name:conversions.no_conversion
