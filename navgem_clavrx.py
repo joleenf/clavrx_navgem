@@ -40,7 +40,6 @@ except ImportError as e:
     msg = "{}.  Try 'conda activate merra2_clavrx'".format(e)
     raise ImportError(msg)
 
-from conversion_class import output_dtype
 from conversions import CLAVRX_FILL, COMPRESSION_LEVEL
 
 LOG = logging.getLogger(__name__)
@@ -65,6 +64,33 @@ class DateParser(argparse.Action):
     def __call__(self, parser, namespace, values, option_strings=None):
         """Parse a date from argparse to a datetime."""
         setattr(namespace, self.dest, dateutil.parser.parse(values).date())
+
+
+def output_dtype(out_name, nc4_dtype):
+    """Convert between string and the equivalent SD.<DTYPE>."""
+    if (nc4_dtype == "single") | (nc4_dtype == "float32"):
+        sd_dtype = SDC.FLOAT32
+    elif (nc4_dtype == "double") | (nc4_dtype == "float64"):
+        sd_dtype = SDC.FLOAT64
+    elif nc4_dtype == "uint32":
+        sd_dtype = SDC.UINT32
+    elif nc4_dtype == "int32":
+        sd_dtype = SDC.INT32
+    elif nc4_dtype == "uint16":
+        sd_dtype = SDC.UINT16
+    elif nc4_dtype == "int16":
+        sd_dtype = SDC.INT16
+    elif nc4_dtype == "int8":
+        sd_dtype = SDC.INT8
+    elif nc4_dtype == "char":
+        sd_dtype = SDC.CHAR
+    else:
+        raise ValueError("UNSUPPORTED NC4 DTYPE FOUND:", nc4_dtype)
+
+    if out_name in ["pressure levels", "level"] and sd_dtype == SDC.FLOAT64:
+        sd_dtype = SDC.FLOAT32  # don't want double
+
+    return sd_dtype
 
 
 def read_yaml():

@@ -137,7 +137,7 @@ def get_product_set_nrl(this_url, this_soup, this_dest_path, this_run_str,
 
     if download:
         for product_name in this_products_list:
-            grib_name = concat_gribs_to_many(dest_path, navgem_run_dt, product_name)
+            grib_name = concat_gribs_to_many(this_dest_path, dt(this_run_str, "%Y%m%d%H"), product_name)
             file_dict.update({product_name: grib_name})
     return file_dict
 
