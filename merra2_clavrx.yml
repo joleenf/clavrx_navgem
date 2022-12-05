@@ -1,0 +1,23 @@
+name: merra2_clavrx
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - numpy
+  - pandas
+  - pyhdf
+  - netCDF4
+  - matplotlib
+  - jupyter
+  - wget
+  - parse
+  - pip
+  - pyyaml
+  - pydap
+  - metpy
+  - cfgrib
+  - pip:
+    - cdsapi
+    - lxml
+    - ecmwf-api-client
